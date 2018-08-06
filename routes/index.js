@@ -34,4 +34,15 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+
+
+// GET route "detail" => détail de la tache
+router.get('/detail', function(req, res, next) {
+   taskModel.find({id:})
+
+  res.render('index', { title: 'Express' });
+});
+
+
+
 module.exports = router;
