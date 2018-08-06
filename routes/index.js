@@ -22,8 +22,13 @@ var memberSchema = mongoose.Schema({
 var MemberModel = mongoose.model('members', memberSchema);
 
 var taskSchema = mongoose.Schema({
-    owner: String,
-    title: String,
+    nomTache: String,
+    description: String,
+    date: Date,
+    idPieceJointe: String,
+    idOwner: String,
+    statusTache: String,
+    statusMembre:[]
 
 });
 
