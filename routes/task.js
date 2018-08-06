@@ -1,5 +1,3 @@
-var express = require('express');
-var router = express.Router();
 var mongoose= require('mongoose');
 
 var options = { server: { socketOptions: {connectTimeoutMS: 5000 } }};
@@ -10,21 +8,10 @@ mongoose.connect('mongodb://adm:azerty123@ds259361.mlab.com:59361/myfamilyapp',
     }
 );
 
-var memberSchema = mongoose.Schema({
-    avatar: String,
-    lastName: String,
-    firstName: String,
-    relationShip: String,
-    driver: Boolean,
-    authority: Boolean
-});
-
-var MemberModel = mongoose.model('members', memberSchema);
-
 var taskSchema = mongoose.Schema({
     nomTache: String,
     description: String,
-    date: Date,
+    date:{ type: Date, default: Date.now },
     idPieceJointe: String,
     idOwner: String,
     statusTache: String,
@@ -33,10 +20,20 @@ var taskSchema = mongoose.Schema({
 });
 
 var taskModel = mongoose.model('tasks', taskSchema);
+console.log(Date.now);
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+  var newTask = new taskModel ({
+    nomTache: 'Lessive',
+    description: 'Etendre le linge',
 
-module.exports = router;
+    idPieceJointe:'',
+	idOwner: '1',
+	statusTache: 'Soumis',
+	statusMembre: [{id: '2', status: ''}, {id: '3', status: ''}]
+  });
+console.log(newTask);
+  newTask.save(
+      function (error, user) {
+         console.log(user);
+      }
+  );
