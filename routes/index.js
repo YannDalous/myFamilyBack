@@ -43,10 +43,19 @@ router.get('/', function(req, res, next) {
 
 // GET route "detail" => détail de la tache
 router.get('/detail', function(req, res, next) {
-   taskModel.find({id:})
+   taskModel.find({_id:req.query.idTache}, function(err, task){
 
-  res.render('index', { title: 'Express' });
+        res.json({nomTache:task.taskName,
+                  descriptionTache:task.description,
+                  date:task.date,
+                  idOwner:task.idOwner});
+   })
+
+
 });
+
+
+// Route delete 
 
 
 
