@@ -28,14 +28,15 @@ var taskSchema = mongoose.Schema({
 var taskModel = mongoose.model('tasks', taskSchema);
 
 var addMember = [{
-lastName: 'El Doctor',
-firstName: 'François'
+lastName: 'avatar-1'
 },{
-lastName: 'Design Suedois',
-firstName: 'Julien'
+lastName: 'avatar-2'
 },{
-lastName: 'Dalous',
-firstName: 'Yann'
+lastName: 'avatar-3'
+},{
+lastName: 'avatar-4'
+},{
+lastName: 'avatar-5'
 }];
 console.log(addMember.length);
 for (var i=0; i<addMember.length; i++) {
