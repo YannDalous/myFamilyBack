@@ -70,7 +70,7 @@ router.get('/detail', function(req, res, next) {
   console.log(req.query);
    taskModel.find({_id:req.query.idTache}, function(err, task){
 console.log("task", task);
-        res.json({nomTache:task[0].taskName,
+        res.json({nomTache:task[0].nomTache,
                   descriptionTache:task[0].description,
                   date:task[0].date,
                   idPieceJointe:task[0].idPieceJointe,
