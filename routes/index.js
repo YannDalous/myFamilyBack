@@ -55,7 +55,24 @@ router.get('/detail', function(req, res, next) {
 });
 
 
-// Route delete 
+
+
+
+
+//Route pour afficher les taches crées par l'utilisateur
+router.get('/tachesCrees', function(req, res, next) {
+  taskModel.find(function (erreur, resultat) {
+        console.log(resultat);
+
+    res.json({resultat});
+   });
+});
+//-------------------------------------------
+
+
+
+
+
 
 
 
