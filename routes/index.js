@@ -54,8 +54,6 @@ router.post('/addCard', function(req, res, next) {
     statusMembre:req.body.statusMembre
   });
 
-
-
   task.save(function(err,tasks){
 
     res.json({taskId: task._id})
@@ -80,7 +78,8 @@ console.log("task", task);
 
 
 // Route delete
-router.delete('/delete', function(req,res,next){
+router.get('/delete', function(req,res,next){
+  console.log("route delete ok");
   taskModel.remove({_id:req.query.idTache},function(err){
     taskModel.find(function(err,task){
       console.log(task);
