@@ -40,19 +40,55 @@ router.get('/', function(req, res, next) {
 });
 
 
+//Route POST
+router.post('/addCard', function(req, res, next) {
+  // console.log("post ok");
+  // console.log(req.body);
+  var task = new taskModel({
+    nomTache: req.body.taskName,
+    description:req.body.description,
+    date:req.body.date,
+    idPieceJointe:req.body.idPieceJointe,
+    idOwner:req.body.idOwner,
+    statusTache:req.body.statusTache,
+    statusMembre:req.body.statusMembre
+  });
+
+
+
+  task.save(function(err,tasks){
+
+    res.json({taskId: task._id})
+
+  });
+  });
+
 
 // GET route "detail" => détail de la tache
 router.get('/detail', function(req, res, next) {
+  console.log("route get detail ok");
+  console.log(req.query);
    taskModel.find({_id:req.query.idTache}, function(err, task){
-
-        res.json({nomTache:task.taskName,
-                  descriptionTache:task.description,
-                  date:task.date,
-                  idOwner:task.idOwner});
+console.log("task", task);
+        res.json({nomTache:task[0].nomTache,
+                  descriptionTache:task[0].description,
+                  date:task[0].date,
+                  idPieceJointe:task[0].idPieceJointe,
+                  idOwner:task[0].idOwner});
    })
-
-
 });
+
+
+// Route delete
+router.delete('/delete', function(req,res,next){
+  taskModel.remove({_id:req.query.idTache},function(err){
+    taskModel.find(function(err,task){
+      console.log(task);
+      res.json({task});
+    });
+  });
+});
+
 
 
 
@@ -68,11 +104,6 @@ router.get('/tachesCrees', function(req, res, next) {
    });
 });
 //-------------------------------------------
-
-
-
-
-
 
 
 
