@@ -51,7 +51,7 @@ var owner;
 
       if (user._id != req.body.idOwner) {
 
-        return {id_membre: user._id, status_membre: ""}
+        return {id_membre: user._id, status_membre: ""};
       }
     });
 
@@ -113,7 +113,70 @@ router.get('/tachesCrees', function(req, res, next) {
    });
 });
 //-------------------------------------------
+router.get('/refused', function(req, res, next) {
+  var updateMember = [];
 
+  taskModel.find(
+      { _id: req.query.idTache } ,
 
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+
+            return {id_membre: member.id_membre, status_membre: "NO" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember },
+              function(error, raw) {
+                console.log(req.query.idMember);
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
+
+router.get('/accept', function(req, res, next) {
+  var updateMember = [];
+
+  taskModel.find(
+      { _id: req.query.idTache } ,
+
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+
+            return {id_membre: member.id_membre, status_membre: "OK" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember,
+              statusTache: "accepte" },
+              function(error, raw) {
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
 
 module.exports = router;
