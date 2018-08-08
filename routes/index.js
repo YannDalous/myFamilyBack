@@ -42,25 +42,40 @@ router.get('/', function(req, res, next) {
 
 //Route POST
 router.post('/addCard', function(req, res, next) {
-  // console.log("post ok");
-  // console.log(req.body);
-  var task = new taskModel({
-    nomTache: req.body.taskName,
-    description:req.body.description,
-    date:req.body.date,
-    idPieceJointe:req.body.idPieceJointe,
-    idOwner:req.body.idOwner,
-    statusTache:req.body.statusTache,
-    statusMembre:req.body.statusMembre
-  });
+var members;
+var owner;
+  MemberModel.find(
+    function (err, users) {
+
+     members = users.map(function(user) {
+
+      if (user._id != req.body.idOwner) {
+
+        return {id_membre: user._id, status_membre: ""}
+      }
+    });
+
+      var task = new taskModel({
+        nomTache: req.body.taskName,
+        description:req.body.description,
+        date:req.body.date,
+        idPieceJointe:"",
+        idOwner:req.body.idOwner,
+        statusTache:"soumis",
+        statusMembre:members
+      });
 
 
 
-  task.save(function(err,tasks){
+      task.save(function(err,tasks){
 
-    res.json({taskId: task._id})
+        res.json({taskId: task._id})
 
-  });
+      });
+
+  }
+  );
+
   });
 
 
@@ -89,6 +104,29 @@ router.delete('/delete', function(req,res,next){
   });
 });
 
+router.post('/addTask', function(req, res, next) {
+  console.log(req.body.taskName,
+                req.body.descTask,
+                req.body.dateTime,
+                req.body.owner
+              )
+
+              var newUser = new UserModel ({
+               lastName: "Doe",
+               firstName: "John",
+               age: 43
+              });
+
+              newUser.save(
+    function (error, user) {
+
+    }
+);
+
+
+    res.json({res})
+
+  });
 
 
 
