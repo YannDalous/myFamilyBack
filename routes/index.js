@@ -81,10 +81,9 @@ var owner;
 
 // GET route "detail" => détail de la tache
 router.get('/detail', function(req, res, next) {
-  console.log("route get detail ok");
-  console.log(req.query);
+
    taskModel.find({_id:req.query.idTache}, function(err, task){
-console.log("task", task);
+
         res.json({nomTache:task[0].nomTache,
                   descriptionTache:task[0].description,
                   date:task[0].date,
@@ -98,47 +97,18 @@ console.log("task", task);
 router.delete('/delete', function(req,res,next){
   taskModel.remove({_id:req.query.idTache},function(err){
     taskModel.find(function(err,task){
-      console.log(task);
+
       res.json({task});
     });
   });
 });
 
-router.post('/addTask', function(req, res, next) {
-  console.log(req.body.taskName,
-                req.body.descTask,
-                req.body.dateTime,
-                req.body.owner
-              )
-
-              var newUser = new UserModel ({
-               lastName: "Doe",
-               firstName: "John",
-               age: 43
-              });
-
-              newUser.save(
-    function (error, user) {
-
-    }
-);
-
-
-    res.json({res})
-
-  });
-
-
-
-
-
-
 //Route pour afficher les taches crées par l'utilisateur
 router.get('/tachesCrees', function(req, res, next) {
   taskModel.find(function (erreur, resultat) {
-        console.log(resultat);
 
-    res.json({resultat});
+
+    res.json(resultat);
    });
 });
 //-------------------------------------------
