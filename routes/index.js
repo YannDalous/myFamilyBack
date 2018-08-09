@@ -94,14 +94,16 @@ router.get('/detail', function(req, res, next) {
 
 
 // Route delete
-router.delete('/delete', function(req,res,next){
-  taskModel.remove({_id:req.query.idTache},function(err){
-    taskModel.find(function(err,task){
+router.get('/delete', function(req,res,next){
 
-      res.json({task});
+  taskModel.remove(
+    {_id:req.query.idTache},
+    function(err, result){
+
+      res.json(req.query.idMember);
     });
   });
-});
+
 
 
 //Route pour afficher les taches crées par l'utilisateur
@@ -171,6 +173,37 @@ router.get('/accept', function(req, res, next) {
               { _id: req.query.idTache},
               { statusMembre: updateMember,
               statusTache: "accepte" },
+              function(error, raw) {
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
+
+router.get('/reset', function(req, res, next) {
+  var updateMember = [];
+
+  taskModel.find(
+      { _id: req.query.idTache } ,
+
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+            return {id_membre: member.id_membre, status_membre: "NO" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember,
+              statusTache: "soumis" },
               function(error, raw) {
                   res.json(req.query.idMember);
               }
