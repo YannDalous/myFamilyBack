@@ -42,32 +42,49 @@ router.get('/', function(req, res, next) {
 
 //Route POST
 router.post('/addCard', function(req, res, next) {
-  // console.log("post ok");
-  // console.log(req.body);
-  var task = new taskModel({
-    nomTache: req.body.taskName,
-    description:req.body.description,
-    date:req.body.date,
-    idPieceJointe:req.body.idPieceJointe,
-    idOwner:req.body.idOwner,
-    statusTache:req.body.statusTache,
-    statusMembre:req.body.statusMembre
-  });
+var members;
+var owner;
+  MemberModel.find(
+    function (err, users) {
 
-  task.save(function(err,tasks){
 
-    res.json({taskId: task._id})
+     members = users.map(function(user) {
 
-  });
+      if (user._id != req.body.idOwner) {
+
+        return {id_membre: user._id, status_membre: ""};
+      }
+    });
+
+      var task = new taskModel({
+        nomTache: req.body.taskName,
+        description:req.body.description,
+        date:req.body.date,
+        idPieceJointe:"",
+        idOwner:req.body.idOwner,
+        statusTache:"soumis",
+        statusMembre:members
+      });
+
+
+
+      task.save(function(err,tasks){
+
+        res.json({taskId: task._id})
+
+      });
+
+  }
+  );
+
   });
 
 
 // GET route "detail" => détail de la tache
 router.get('/detail', function(req, res, next) {
-  console.log("route get detail ok");
-  console.log(req.query);
+
    taskModel.find({_id:req.query.idTache}, function(err, task){
-console.log("task", task);
+
         res.json({nomTache:task[0].nomTache,
                   descriptionTache:task[0].description,
                   date:task[0].date,
@@ -79,28 +96,119 @@ console.log("task", task);
 
 // Route delete
 router.get('/delete', function(req,res,next){
-  console.log("route delete ok");
-  taskModel.remove({_id:req.query.idTache},function(err){
-    taskModel.find(function(err,task){
-      console.log(task);
-      res.json({task});
+
+  taskModel.remove(
+    {_id:req.query.idTache},
+    function(err, result){
+
+      res.json(req.query.idMember);
     });
   });
-});
-
-
 
 
 //Route pour afficher les taches crées par l'utilisateur
 router.get('/tachesCrees', function(req, res, next) {
   taskModel.find(function (erreur, resultat) {
-        console.log(resultat);
 
     res.json(resultat);
    });
 });
 //-------------------------------------------
+router.get('/refused', function(req, res, next) {
+  var updateMember = [];
 
+  taskModel.find(
+      { _id: req.query.idTache } ,
 
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+
+            return {id_membre: member.id_membre, status_membre: "NO" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember },
+              function(error, raw) {
+                console.log(req.query.idMember);
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
+
+router.get('/accept', function(req, res, next) {
+  var updateMember = [];
+
+  taskModel.find(
+      { _id: req.query.idTache } ,
+
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+
+            return {id_membre: member.id_membre, status_membre: "OK" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember,
+              statusTache: "accepte" },
+              function(error, raw) {
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
+
+router.get('/reset', function(req, res, next) {
+  var updateMember = [];
+
+  taskModel.find(
+      { _id: req.query.idTache } ,
+
+      function (err, task) {
+
+        updateMember = task[0].statusMembre.map(member => {
+
+          if (member != null) {
+          if (member.id_membre == req.query.idMember) {
+            return {id_membre: member.id_membre, status_membre: "NO" };
+          } else {
+
+            return {id_membre: member.id_membre, status_membre: member.status_membre };
+          }
+        }
+        });
+          taskModel.update(
+              { _id: req.query.idTache},
+              { statusMembre: updateMember,
+              statusTache: "soumis" },
+              function(error, raw) {
+                  res.json(req.query.idMember);
+              }
+          );
+      }
+  )
+});
 
 module.exports = router;
