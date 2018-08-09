@@ -42,19 +42,26 @@ router.get('/', function(req, res, next) {
 
 //Route POST
 router.post('/addCard', function(req, res, next) {
-var members;
+var members=[];
 var owner;
   MemberModel.find(
     function (err, users) {
 
-
-     members = users.map(function(user) {
+  /*   members = users.map(function(user) {
 
       if (user._id != req.body.idOwner) {
 
         return {id_membre: user._id, status_membre: ""};
       }
-    });
+    });*/
+
+    for (var i=0; i<users.length; i++ ) {
+      if (users[i]._id != req.body.idOwner) {
+
+        members.push({id_membre: users[i]._id, status_membre: ""});
+      }
+    }
+
 
       var task = new taskModel({
         nomTache: req.body.taskName,
@@ -78,6 +85,47 @@ var owner;
   );
 
   });
+
+
+
+  //route pour ecrire en base que l' utilisateur a VU la tache disponible
+  router.get('/vu', function(req, res, next) {
+   var updateMember = [];
+   taskModel.find(
+       { _id: req.query.idTache } ,
+
+       function (err, task) {
+
+         updateMember = task[0].statusMembre.map(member => {
+
+           if (member != null) {
+           if (member.id_membre == req.query.idMember && member.status_membre=="") {
+             console.log('tache pas encore vue ' );
+             return {id_membre: member.id_membre, status_membre: "VU" };
+           } else {
+
+             return {id_membre: member.id_membre, status_membre: member.status_membre };
+           }
+         }
+         });
+
+           taskModel.update(
+               { _id: req.query.idTache},
+               { statusMembre: updateMember,
+               statusTache: "soumis" },
+               function(error, raw) {
+                   res.json(req.query.idMember);
+               }
+           );
+       }
+   )
+  });
+
+
+
+
+
+
 
 
 // GET route "detail" => détail de la tache
@@ -106,6 +154,7 @@ router.get('/delete', function(req,res,next){
   });
 
 
+
 //Route pour afficher les taches crées par l'utilisateur
 router.get('/tachesCrees', function(req, res, next) {
   taskModel.find(function (erreur, resultat) {
@@ -122,24 +171,26 @@ router.get('/refused', function(req, res, next) {
 
       function (err, task) {
 
-        updateMember = task[0].statusMembre.map(member => {
+      /*  updateMember = task[0].statusMembre.map(member => {
 
-          if (member != null) {
-          if (member.id_membre == req.query.idMember) {
+          if (member != null) {*/
 
-            return {id_membre: member.id_membre, status_membre: "NO" };
+      for (var j=0; j<task[0].statusMembre.length; j++ ) {
+          if (task[0].statusMembre[j].id_membre == req.query.idMember) {
+
+            updateMember.push({id_membre: task[0].statusMembre[j].id_membre, status_membre: "NO" });
           } else {
 
-            return {id_membre: member.id_membre, status_membre: member.status_membre };
+            updateMember.push({id_membre: task[0].statusMembre[j].id_membre, status_membre: task[0].statusMembre[j].status_membre });
           }
-        }
-        });
+         }
+        // });
 
           taskModel.update(
               { _id: req.query.idTache},
               { statusMembre: updateMember },
               function(error, raw) {
-                console.log(req.query.idMember);
+
                   res.json(req.query.idMember);
               }
           );
@@ -155,18 +206,19 @@ router.get('/accept', function(req, res, next) {
 
       function (err, task) {
 
-        updateMember = task[0].statusMembre.map(member => {
+        // updateMember = task[0].statusMembre.map(member => {
+        //
+        //   if (member != null) {
+            for (var k=0; k<task[0].statusMembre.length; k++ ) {
+          if (task[0].statusMembre[k].id_membre == req.query.idMember) {
 
-          if (member != null) {
-          if (member.id_membre == req.query.idMember) {
-
-            return {id_membre: member.id_membre, status_membre: "OK" };
+            updateMember.push({id_membre: task[0].statusMembre[k].id_membre, status_membre: "OK" });
           } else {
 
-            return {id_membre: member.id_membre, status_membre: member.status_membre };
+            updateMember.push({id_membre: task[0].statusMembre[k].id_membre, status_membre: task[0].statusMembre[k].status_membre });
           }
-        }
-        });
+         }
+        // });
 
           taskModel.update(
               { _id: req.query.idTache},
@@ -188,17 +240,18 @@ router.get('/reset', function(req, res, next) {
 
       function (err, task) {
 
-        updateMember = task[0].statusMembre.map(member => {
-
-          if (member != null) {
-          if (member.id_membre == req.query.idMember) {
-            return {id_membre: member.id_membre, status_membre: "NO" };
+        // updateMember = task[0].statusMembre.map(member => {
+        //
+        //   if (member != null) {
+            for (var l=0; l<task[0].statusMembre.length; l++ ) {
+          if (task[0].statusMembre[l].id_membre == req.query.idMember) {
+            updateMember.push({id_membre: task[0].statusMembre[l].id_membre, status_membre: "NO" });
           } else {
 
-            return {id_membre: member.id_membre, status_membre: member.status_membre };
+            updateMember.push({id_membre: task[0].statusMembre[l].id_membre, status_membre: task[0].statusMembre[l].status_membre });
           }
-        }
-        });
+         }
+        // });
           taskModel.update(
               { _id: req.query.idTache},
               { statusMembre: updateMember,
